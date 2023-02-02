@@ -15,5 +15,7 @@ module.exports = {
     sourceType: "module",
 		tsconfigRootDir: __dirname
   },
-  rules: {},
+  rules: {
+    "new-cap": "off"
+  },
 };
