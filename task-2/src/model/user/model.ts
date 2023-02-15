@@ -29,20 +29,18 @@ class UserModel {
 
   constructor(data: User[]) {
     this._list = data;
-
     this._dict = getUsersDictionary(data);
-
     this._logins = getUsersLoginSet(data);
   }
 
   get users() {
-    return this._list;
+    return this._list.filter((user) => !user.isDeleted);
   }
 
   getById(id: string) {
     const user = this._dict[id];
 
-    if (!user) {
+    if (!user || user.isDeleted) {
       throw new Error(`User with id ${id} wasn't found`);
     }
 
@@ -88,14 +86,25 @@ class UserModel {
   }
 
   suggest(params: unknown) {
+    const { query, limit } = suggestQueryParamsSchema.parse(params);
 
-      const { query, limit } = suggestQueryParamsSchema.parse(params);
-      
-      const results = this._list
-      .filter(({ login }) => login.includes(query))
+    const results = this._list
+      .filter(({ login, isDeleted }) => login.includes(query) && !isDeleted)
       .slice(0, limit);
-      
-      return sortUsersByLogin(results);
+
+    return sortUsersByLogin(results);
+  }
+
+  softDelete(id: string) {
+    const user = this._dict[id] as Record<string, string | number | boolean>;
+
+    if (!user) {
+      throw new Error(`User with id ${id} wasn't found`);
+    }
+
+    user.isDeleted = true;
+
+    return user;
   }
 
   private _validateLogin(login: string) {
