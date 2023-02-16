@@ -1,9 +1,9 @@
-import { userModel } from "@model";
+import { userService } from "@services";
 import type { RequestHandler } from "express";
 
-export const deleteUserById: RequestHandler = (req, res) => {
+export const deleteUserById: RequestHandler = async (req, res) => {
   try {
-    const user = userModel.softDelete(req.params.id);
+    const user = await userService.delete(req.params.id);
 
     res.status(201);
     res.json(user);

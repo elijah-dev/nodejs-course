@@ -1,9 +1,9 @@
-import { userModel } from "@model";
+import { userService } from "@services";
 import type { RequestHandler } from "express";
 
-export const suggestUsers: RequestHandler = (req, res) => {
+export const suggestUsers: RequestHandler = async (req, res) => {
   try {
-    const results = userModel.suggest(req.query);
+    const results = await userService.suggest(req.query);
 
     res.status(201);
     res.json(results);

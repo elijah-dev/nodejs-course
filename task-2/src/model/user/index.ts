@@ -1,2 +1,5 @@
-export { userModel } from "./model";
+import { User } from "./entity";
+
+export const entities = [User]
+
 

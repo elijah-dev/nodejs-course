@@ -1,14 +1,14 @@
-import { userModel } from "@model";
+import { userService } from "@services";
 import type { RequestHandler } from "express";
 
-export const getUserById: RequestHandler = (req, res) => {
+export const getUserById: RequestHandler = async (req, res) => {
   try {
-    const user = userModel.getById(req.params.id);
+    const user = await userService.getById(req.params.id);
 
     res.status(201);
     res.json(user);
   } catch (error) {
     res.status(400);
-    res.send(error);
+    res.json(error);
   }
 };
