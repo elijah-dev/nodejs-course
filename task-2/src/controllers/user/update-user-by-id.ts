@@ -1,15 +1,15 @@
 
-import { userModel } from "@model";
+import { userService } from "@services";
 import type { RequestHandler } from "express";
 
-export const updateUserById: RequestHandler = (req, res) => {
+export const updateUserById: RequestHandler = async (req, res) => {
   try {
-    const updatedUser = userModel.updateById(req.params.id, req.body);
+    const updatedUser = await userService.update(req.params.id, req.body);
 
     res.status(201);
     res.json(updatedUser);
   } catch (error) {
     res.status(400);
-    res.send(error);
+    res.json(error);
   }
 };
