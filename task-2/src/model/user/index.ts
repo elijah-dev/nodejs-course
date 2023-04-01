@@ -1,5 +1,4 @@
-import { User } from "./entity";
+export { User } from "./entity";
 
-export const entities = [User]
 
 

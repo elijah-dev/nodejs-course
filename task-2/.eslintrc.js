@@ -13,9 +13,9 @@ module.exports = {
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
-		tsconfigRootDir: __dirname
+    tsconfigRootDir: __dirname,
   },
   rules: {
-    "new-cap": "off"
+    "new-cap": "off",
   },
 };

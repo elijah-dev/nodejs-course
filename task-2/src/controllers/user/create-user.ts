@@ -1,14 +1,10 @@
 import { userService } from "@services";
+import { catchErrors } from "@utils";
 import type { RequestHandler } from "express";
 
-export const createUser: RequestHandler = async (req, res) => {
-  try {
-    const newUser = await userService.create(req.body);
+export const createUser: RequestHandler = catchErrors(async (req, res) => {
+  const newUser = await userService.create(req.body);
 
-    res.status(201);
-    res.json(newUser);
-  } catch (error) {
-    res.status(400);
-    res.json(error);
-  }
-};
+  res.status(201);
+  res.json(newUser);
+});

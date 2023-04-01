@@ -1,14 +1,10 @@
 import { userService } from "@services";
+import { catchErrors } from "@utils";
 import type { RequestHandler } from "express";
 
-export const getUserById: RequestHandler = async (req, res) => {
-  try {
-    const user = await userService.getById(req.params.id);
+export const getUserById: RequestHandler = catchErrors(async (req, res) => {
+  const user = await userService.getById(req.params.id);
 
-    res.status(201);
-    res.json(user);
-  } catch (error) {
-    res.status(400);
-    res.json(error);
-  }
-};
+  res.status(201);
+  res.json(user);
+});
