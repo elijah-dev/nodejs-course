@@ -1,14 +1,10 @@
 import { userService } from "@services";
+import { catchErrors } from "@utils";
 import type { RequestHandler } from "express";
 
-export const deleteUserById: RequestHandler = async (req, res) => {
-  try {
+export const deleteUserById: RequestHandler = catchErrors(async (req, res) => {
     const user = await userService.delete(req.params.id);
 
     res.status(201);
     res.json(user);
-  } catch (error) {
-    res.status(400);
-    res.json(error);
-  }
-};
+});

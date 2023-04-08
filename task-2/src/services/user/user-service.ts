@@ -1,4 +1,4 @@
-import { User } from "@model/user/entity";
+import { User } from "@model/user";
 import { DataSourceService } from "@services/data-source-service";
 import type { DataSource, Repository } from "typeorm";
 import { ILike } from "typeorm";
