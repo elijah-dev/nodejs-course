@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import express from "express";
-import morgan from "morgan";
 import chalk from "chalk";
 import { router as apiRouter } from "@routes";
 import bodyParser from "body-parser";
@@ -9,7 +8,10 @@ import { DataSource } from "typeorm";
 import "reflect-metadata";
 import { registerDataSource } from "@services";
 import { entities } from "@model";
-import { errorHandler } from "@middleware";
+import { errorHandler, requestLogger } from "@middleware";
+import { logger, unhandledErrorLoger } from "@loggers";
+
+unhandledErrorLoger.init();
 
 dotenv.config();
 
@@ -33,16 +35,16 @@ export const dataSource = new DataSource({
 dataSource
   .initialize()
   .then(async () => {
-    console.log(chalk.blue("Database connected successfully"));
+    logger.info("Database connected successfully");
     await dataSource.synchronize();
 
     registerDataSource(dataSource);
 
     const app = express();
 
-    app.use(morgan("dev"));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(requestLogger)
 
     app.use("/api", apiRouter);
 
@@ -54,11 +56,9 @@ dataSource
     app.use(errorHandler);
 
     app.listen(PORT, () => {
-      console.log("Listening on port " + chalk.green(PORT));
+      logger.info(chalk.green("Listening on port " + chalk.bold(PORT)));
     });
   })
   .catch((error) => {
-    console.error(error);
-
     throw new Error(error);
   });
