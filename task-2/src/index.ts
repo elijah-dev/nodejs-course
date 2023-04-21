@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import express from "express";
 import chalk from "chalk";
-import { router as apiRouter } from "@routes";
+import { apiRouter, authRouter } from "@routes";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { DataSource } from "typeorm";
@@ -10,6 +10,8 @@ import { registerDataSource } from "@services";
 import { entities } from "@model";
 import { errorHandler, requestLogger } from "@middleware";
 import { logger, unhandledErrorLoger } from "@loggers";
+import { initAuth } from "@auth";
+import passport from "passport";
 
 unhandledErrorLoger.init();
 
@@ -40,13 +42,20 @@ dataSource
 
     registerDataSource(dataSource);
 
+    initAuth();
+
     const app = express();
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(requestLogger)
+    app.use(requestLogger);
 
-    app.use("/api", apiRouter);
+    app.use("/auth", authRouter);
+    app.use(
+      "/api",
+      passport.authenticate("jwt", { session: false }),
+      apiRouter
+    );
 
     app.get("*", (req, res) => {
       res.status(404);
