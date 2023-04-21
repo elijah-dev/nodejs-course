@@ -5,6 +5,8 @@ export const catchErrors =
   (fn: RequestHandler) => (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch((err) => {
       let message;
+      console.log(err.status, err.message);
+      
 
       if (err instanceof Error) {
         message = err.message;
