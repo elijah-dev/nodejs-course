@@ -1,3 +1,4 @@
+import { keyProvider } from "@providers";
 import { userService } from "@services";
 import passport from "passport";
 import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt";
@@ -7,7 +8,7 @@ export const initJwtStrategy = () => {
     new JWTStrategy(
       {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: "secret",
+        secretOrKey: keyProvider.jwtSecret,
       },
       async (jwtPayload, done) => {
         const user = await userService.getById(jwtPayload.id);
