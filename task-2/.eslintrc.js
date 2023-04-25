@@ -8,6 +8,11 @@ module.exports = {
     {
       extends: ["xo-typescript", "prettier"],
       files: ["*.ts", "*.tsx"],
+      rules: {
+        "@typescript-eslint/no-confusing-void-expression": "off",
+        "@typescript-eslint/ban-types": "warn",
+        "@typescript-eslint/naming-convention": "off",
+      },
     },
   ],
   parserOptions: {

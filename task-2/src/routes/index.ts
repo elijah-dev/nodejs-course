@@ -3,8 +3,10 @@ import { router as userRouter } from "./user";
 import { router as groupRouter } from "./group";
 import { router as userGroupRouter } from "./user-group";
 
-export const router = Router();
+export { router as authRouter } from "./auth";
 
-router.use("/user", userRouter);
-router.use("/group", groupRouter);
-router.use("/user-group", userGroupRouter);
+export const apiRouter = Router();
+
+apiRouter.use("/user", userRouter);
+apiRouter.use("/group", groupRouter);
+apiRouter.use("/user-group", userGroupRouter);

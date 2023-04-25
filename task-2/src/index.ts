@@ -1,34 +1,24 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import express from "express";
 import chalk from "chalk";
-import { router as apiRouter } from "@routes";
+import { apiRouter, authRouter } from "@routes";
 import bodyParser from "body-parser";
-import dotenv from "dotenv";
 import { DataSource } from "typeorm";
 import "reflect-metadata";
 import { registerDataSource } from "@services";
 import { entities } from "@model";
 import { errorHandler, requestLogger } from "@middleware";
 import { logger, unhandledErrorLoger } from "@loggers";
+import { initAuth } from "@auth";
+import passport from "passport";
+import { keyProvider } from "@providers";
 
 unhandledErrorLoger.init();
 
-dotenv.config();
-
-const { DB_HOST, DB_PORT, DB_USERNAME, DB_NAME, DB_PASSWORD, PORT } =
-  process.env;
-
-if (!DB_HOST || !DB_PORT || !DB_NAME || !DB_USERNAME || !DB_PASSWORD || !PORT) {
-  throw new Error("Failed to load environment variables");
-}
+keyProvider.init();
 
 export const dataSource = new DataSource({
   type: "postgres",
-  host: DB_HOST,
-  port: Number(DB_PORT),
-  username: DB_USERNAME,
-  password: DB_PASSWORD,
-  database: DB_NAME,
+  ...keyProvider.getDbKeys(),
   entities,
 });
 
@@ -40,13 +30,20 @@ dataSource
 
     registerDataSource(dataSource);
 
+    initAuth();
+
     const app = express();
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(requestLogger)
+    app.use(requestLogger);
 
-    app.use("/api", apiRouter);
+    app.use("/auth", authRouter);
+    app.use(
+      "/api",
+      passport.authenticate("jwt", { session: false }),
+      apiRouter
+    );
 
     app.get("*", (req, res) => {
       res.status(404);
@@ -55,8 +52,8 @@ dataSource
 
     app.use(errorHandler);
 
-    app.listen(PORT, () => {
-      logger.info(chalk.green("Listening on port " + chalk.bold(PORT)));
+    app.listen(keyProvider.port, () => {
+      logger.info(chalk.green("Listening on port " + chalk.bold(keyProvider.port)));
     });
   })
   .catch((error) => {

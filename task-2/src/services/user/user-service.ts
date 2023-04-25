@@ -18,6 +18,10 @@ export class UserService extends DataSourceService {
     });
   }
 
+  async getByLogin(login: string) {
+    return this._repository.findOneBy({ login });
+  }
+
   async create(data: User) {
     const user = new User();
     user.login = data.login;
@@ -58,7 +62,7 @@ export class UserService extends DataSourceService {
       where: {
         login: ILike(`%${query}%`),
       },
-      take: limit
+      take: limit,
     });
   }
 

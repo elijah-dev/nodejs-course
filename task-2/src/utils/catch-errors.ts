@@ -3,9 +3,10 @@ import { CustomError } from "./custom-error";
 
 export const catchErrors =
   (fn: RequestHandler) => (req: Request, res: Response, next: NextFunction) => {
-    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     Promise.resolve(fn(req, res, next)).catch((err) => {
       let message;
+      console.log(err.status, err.message);
+      
 
       if (err instanceof Error) {
         message = err.message;
@@ -15,6 +16,6 @@ export const catchErrors =
         message = err;
       }
 
-      next(new CustomError(400, message ?? "Something went wrong"));
+      next(new CustomError(err.status ?? 400, message ?? "Something went wrong"));
     });
   };
